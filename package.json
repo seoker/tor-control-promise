@@ -1,6 +1,6 @@
 {
   "name": "tor-control-promise",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "communicate tor-control",
   "main": "index.js",
   "scripts": {
