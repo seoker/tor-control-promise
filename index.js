@@ -1,7 +1,8 @@
 const net = require('net');
 const TorControlError = require('./TorControlError');
+const debug = require('debug')('tor_control_promise');
 
-class Tor {
+class TorControl {
     constructor({ host, port, password } = {}) {
         this.opts = {
             'host': host || 'localhost',
@@ -18,13 +19,13 @@ class Tor {
                 .once('error', reject)
                 .once('data', (data) => {
                     data = data.toString();
-                    let ret = /([0-9]{1,3})\s(.*)\r\n/.exec(data);
-                    if (ret !== null) {
-                        const number = parseInt(ret[1]);
+                    const matched = /([0-9]{1,3})\s(.*)\r\n/.exec(data);
+                    if (matched !== null) {
+                        const number = parseInt(matched[1]);
                         if (number === 250) {
                             return resolve({
                                 type: number,
-                                message: ret[2],
+                                message: matched[2],
                                 data: data,
                             });
                         }
@@ -48,16 +49,18 @@ class Tor {
                 .once('data', (data) => {
                     try {
                         data = data.toString();
-                        let ret = /([0-9]{1,3})\s(.*)\r\n/.exec(data);
-                        if (!ret) {
+                        const matched = /([0-9]{1,3})\s(.*)\r\n/.exec(data);
+                        if (!matched) {
                             return reject(new TorControlError('Invalid response.', data));
                         }
 
-                        return resolve({
-                            type: parseInt(ret[1], 10),
-                            message: ret[2],
+                        const ret = {
+                            type: parseInt(matched[1], 10),
+                            message: matched[2],
                             data: data,
-                        });
+                        };
+                        debug('ret=%j', ret);
+                        return resolve(ret);
                     } catch (e) {
                         return reject(new TorControlError('Failed parsing data.', data));
                     }
@@ -189,6 +192,6 @@ class Tor {
     }
 }
 
-Tor.TorControlError = TorControlError;
+TorControl.TorControlError = TorControlError;
 
-module.exports = Tor; 
+module.exports = TorControl; 

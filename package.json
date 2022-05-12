@@ -16,7 +16,9 @@
     "url": "https://github.com/pelogvc/tor-control-promise/issues"
   },
   "homepage": "https://github.com/pelogvc/tor-control-promise#readme",
-  "dependencies": {},
+  "dependencies": {
+    "debug": "^4.3.4"
+  },
   "devDependencies": {
     "mocha": "^6.0.2"
   }
